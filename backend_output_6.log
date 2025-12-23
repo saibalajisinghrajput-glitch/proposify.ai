@@ -1,0 +1,24 @@
+[dotenv@17.2.3] injecting env (6) from .env -- tip: 👥 sync secrets across teammates & machines: https://dotenvx.com/ops
+🔧 Configuration:
+   Environment: development
+   Demo Mode: DISABLED
+---
+⚠️  OpenAI API key not found in environment variables
+🚫 Demo routes disabled
+🚀 ProposifyAI Backend running on port 5001
+🌍 Environment: development
+MongoDB connected
+[2025-12-22T06:40:26.758Z] POST /api/auth/signup
+Signup request received
+Creating new user instance...
+Saving user...
+Pre-save hook triggered
+Hashing password...
+Password hashed
+User saved successfully
+Signing token...
+Token signed
+Response sent
+[2025-12-22T06:40:27.348Z] POST /signup - Status: 201
+[2025-12-22T06:41:36.550Z] GET /health
+[2025-12-22T06:41:36.554Z] GET /health - Status: 200

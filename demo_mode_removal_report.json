@@ -1,0 +1,150 @@
+{
+  "summary": {
+    "total": 14,
+    "passed": 7,
+    "failed": 5,
+    "warnings": 2,
+    "successRate": "50.0%"
+  },
+  "results": [
+    {
+      "test": "Backend Demo Mode Removal",
+      "status": "PASS",
+      "message": "Backend demo mode successfully removed",
+      "timestamp": "2025-12-23T05:11:59.646Z",
+      "details": {
+        "health": {
+          "status": "OK",
+          "message": "Backend is healthy",
+          "timestamp": "2025-12-23T05:11:59.642Z",
+          "version": "1.0.0",
+          "environment": "development",
+          "database": "disconnected",
+          "jwtSecret": "configured",
+          "port": "5001",
+          "mongodbUri": "configured",
+          "nodeEnv": "development",
+          "corsOrigin": "http://localhost:3000"
+        },
+        "hasDemoMode": false
+      }
+    },
+    {
+      "test": "Production Environment",
+      "status": "WARN",
+      "message": "Environment set to: development",
+      "timestamp": "2025-12-23T05:11:59.647Z",
+      "details": {
+        "expected": "production",
+        "actual": "development"
+      }
+    },
+    {
+      "test": "Database Connection",
+      "status": "FAIL",
+      "message": "Database status: disconnected",
+      "timestamp": "2025-12-23T05:11:59.647Z",
+      "details": {
+        "expected": "connected",
+        "actual": "disconnected"
+      }
+    },
+    {
+      "test": "Protected Route Access Without Token",
+      "status": "WARN",
+      "message": "Unexpected error when accessing protected route",
+      "timestamp": "2025-12-23T05:11:59.650Z",
+      "details": {
+        "status": 404,
+        "error": "Request failed with status code 404"
+      }
+    },
+    {
+      "test": "Demo Endpoint /api/demo/proposals/generate",
+      "status": "FAIL",
+      "message": "Demo endpoint still accessible",
+      "timestamp": "2025-12-23T05:11:59.653Z",
+      "details": null
+    },
+    {
+      "test": "Demo Endpoint /api/demo/resumes/generate",
+      "status": "FAIL",
+      "message": "Demo endpoint still accessible",
+      "timestamp": "2025-12-23T05:11:59.654Z",
+      "details": null
+    },
+    {
+      "test": "Demo Endpoint /api/demo/offer-letters/generate",
+      "status": "FAIL",
+      "message": "Demo endpoint still accessible",
+      "timestamp": "2025-12-23T05:11:59.655Z",
+      "details": null
+    },
+    {
+      "test": "Demo Endpoint /api/demo/contracts/generate",
+      "status": "FAIL",
+      "message": "Demo endpoint still accessible",
+      "timestamp": "2025-12-23T05:11:59.657Z",
+      "details": null
+    },
+    {
+      "test": "DemoGenerator Component Removal",
+      "status": "PASS",
+      "message": "DemoGenerator component successfully removed",
+      "timestamp": "2025-12-23T05:11:59.657Z",
+      "details": {
+        "path": "/Users/saibalajisinghrajput/Desktop/proposifyai/frontend/src/pages/DemoGenerator.js",
+        "exists": false
+      }
+    },
+    {
+      "test": "App.js Demo Route Removal",
+      "status": "PASS",
+      "message": "App.js demo routes successfully removed",
+      "timestamp": "2025-12-23T05:11:59.658Z",
+      "details": {
+        "hasDemoRoute": false,
+        "hasDemoMode": false
+      }
+    },
+    {
+      "test": "PrivateRoute Demo Bypass Removal",
+      "status": "PASS",
+      "message": "PrivateRoute demo bypass successfully removed",
+      "timestamp": "2025-12-23T05:11:59.658Z",
+      "details": {
+        "hasDemoBypass": false
+      }
+    },
+    {
+      "test": "Production Configuration",
+      "status": "PASS",
+      "message": "Server configured for production",
+      "timestamp": "2025-12-23T05:11:59.659Z",
+      "details": {
+        "hasDemoMode": false,
+        "hasDemoFallback": false,
+        "hasMongoOptional": false
+      }
+    },
+    {
+      "test": "Mandatory Database Connection",
+      "status": "PASS",
+      "message": "Database connection is mandatory",
+      "timestamp": "2025-12-23T05:11:59.659Z",
+      "details": {
+        "hasOptionalDB": false
+      }
+    },
+    {
+      "test": "Database Error Handling",
+      "status": "PASS",
+      "message": "Application properly exits on database failure",
+      "timestamp": "2025-12-23T05:11:59.659Z",
+      "details": {
+        "hasExitOnDBError": true
+      }
+    }
+  ],
+  "timestamp": "2025-12-23T05:11:59.659Z"
+}

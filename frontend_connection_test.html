@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProposifyAI Frontend-Backend Connection Test</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .info { color: #17a2b8; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 3px;
+            white-space: pre-wrap;
+        }
+        .result.success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .result.error { background: #f8d7da; border: 1px solid #f5c6cb; }
+        .result.info { background: #d1ecf1; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 ProposifyAI Frontend-Backend Connection Test</h1>
+        
+        <div class="test-section">
+            <h3>🔍 Backend Health Check</h3>
+            <button onclick="checkBackendHealth()">Check Backend Health</button>
+            <div id="healthResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔐 Signup Test</h3>
+            <input type="text" id="signupName" placeholder="Full Name" value="Test User">
+            <input type="email" id="signupEmail" placeholder="Email" value="test@example.com">
+            <input type="password" id="signupPassword" placeholder="Password" value="password123">
+            <button onclick="testSignup()">Test Signup</button>
+            <div id="signupResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📄 AI Generation Test</h3>
+            <textarea id="generationData" rows="5" placeholder='{"serviceType": "web development", "clientIndustry": "technology", "projectDescription": "Build a website", "budget": "$5000", "timeline": "2 months"}'>
+{
+  "serviceType": "web development",
+  "clientIndustry": "technology",
+  "projectDescription": "Build a responsive website with modern features",
+  "budget": "$5000-10000",
+  "timeline": "2-3 months"
+}
+            </textarea>
+            <button onclick="testGeneration()">Test AI Generation</button>
+            <div id="generationResult" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Status Summary</h3>
+            <div id="statusSummary" class="result info">
+Click the buttons above to test each functionality. If all tests pass, your ProposifyAI app is working correctly!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api';
+        let authToken = null;
+
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `result ${type}`;
+            element.textContent = message;
+        }
+
+        async function checkBackendHealth() {
+            log('healthResult', 'Checking backend health...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                if (response.ok) {
+                    log('healthResult', `✅ Backend is healthy!\nStatus: ${data.status}\nMessage: ${data.message}\nTime: ${data.timestamp}`, 'success');
+                } else {
+                    log('healthResult', `❌ Backend health check failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log('healthResult', `❌ Cannot connect to backend: ${error.message}\nMake sure the backend is running on port 5001`, 'error');
+            }
+        }
+
+        async function testSignup() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            log('signupResult', 'Testing signup...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.token;
+                    log('signupResult', `✅ Signup successful!\n\nToken: ${data.token}\nUser: ${data.user.name} (${data.user.email})\nSubscription: ${data.user.subscription}`, 'success');
+                } else {
+                    log('signupResult', `❌ Signup failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log('signupResult', `❌ Signup error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testGeneration() {
+            if (!authToken) {
+                log('generationResult', '❌ Please test signup first to get an auth token', 'error');
+                return;
+            }
+            
+            let proposalData;
+            try {
+                proposalData = JSON.parse(document.getElementById('generationData').value);
+            } catch (error) {
+                log('generationResult', '❌ Invalid JSON data', 'error');
+                return;
+            }
+            
+            log('generationResult', 'Testing AI generation...', 'info');
+            
+            try {
+                const response = await fetch(`${API_BASE}/proposals/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(proposalData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const preview = data.content.length > 200 ? 
+                        data.content.substring(0, 200) + '...' : 
+                        data.content;
+                    log('generationResult', `✅ AI Generation successful!\n\nContent Length: ${data.content.length} characters\n\nPreview:\n${preview}`, 'success');
+                } else {
+                    log('generationResult', `❌ Generation failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log('generationResult', `❌ Generation error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-check backend health on page load
+        window.onload = function() {
+            checkBackendHealth();
+        };
+    </script>
+</body>
+</html>

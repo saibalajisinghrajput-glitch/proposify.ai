@@ -1,0 +1,284 @@
+ml<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProposifyAI - Demo Generator Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-4xl mx-auto p-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">🎯 ProposifyAI Demo Generator Test</h1>
+        
+        <!-- Test Status -->
+        <div id="status" class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">System Status</h2>
+            <div id="status-content">
+                <p class="text-gray-600">Checking system status...</p>
+            </div>
+        </div>
+
+        <!-- Demo Generator Form -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+            <h2 class="text-xl font-semibold mb-4">Test Generation</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Name *</label>
+                    <input type="text" id="clientName" value="Test Client" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                    <input type="text" id="clientCompany" value="Test Company" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Phone *</label>
+                    <input type="text" id="clientPhone" value="+91 9876543210" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Email</label>
+                    <input type="email" id="clientEmail" value="test@example.com" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Industry *</label>
+                    <select id="clientIndustry" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="Technology" selected>Technology</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Finance">Finance</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                    <select id="country" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="India" selected>India</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget *</label>
+                    <select id="budget" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="₹50,000 – ₹1,00,000" selected>₹50,000 – ₹1,00,000</option>
+                        <option value="₹25,000 – ₹50,000">₹25,000 – ₹50,000</option>
+                        <option value="₹1,00,000 – ₹5,00,000">₹1,00,000 – ₹5,00,000</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Timeline *</label>
+                    <select id="timeline" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="1 month" selected>1 month</option>
+                        <option value="2 weeks">2 weeks</option>
+                        <option value="3 months">3 months</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Service Type *</label>
+                    <select id="serviceType" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="Web Development" selected>Web Development</option>
+                        <option value="Mobile App Development">Mobile App Development</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex space-x-4 mb-6">
+                <button onclick="testProposal()" id="proposalBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+                    📄 Test Proposal Generation
+                </button>
+                <button onclick="testContract()" id="contractBtn" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700">
+                    📋 Test Contract Generation
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results" class="bg-white p-6 rounded-lg shadow-md mb-6" style="display: none;">
+            <h2 class="text-xl font-semibold mb-4">Results</h2>
+            <div id="results-content"></div>
+        </div>
+
+        <!-- Logs -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Console Logs</h2>
+            <div id="logs" class="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm h-64 overflow-y-auto">
+                <div>System initialized. Ready for testing...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:5001';
+        const FRONTEND_URL = 'http://localhost:3000';
+
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'text-red-400' : type === 'success' ? 'text-green-400' : 'text-blue-400';
+            logContainer.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateStatus(message, success = true) {
+            const statusContent = document.getElementById('status-content');
+            const color = success ? 'text-green-600' : 'text-red-600';
+            const icon = success ? '✅' : '❌';
+            statusContent.innerHTML = `<p class="${color}">${icon} ${message}</p>`;
+        }
+
+        async function checkSystemStatus() {
+            log('Checking system status...');
+            
+            // Check frontend
+            try {
+                const frontendResponse = await fetch(FRONTEND_URL);
+                if (frontendResponse.ok) {
+                    log('Frontend is running', 'success');
+                    updateStatus('Frontend is running correctly');
+                } else {
+                    throw new Error('Frontend not responding');
+                }
+            } catch (error) {
+                log(`Frontend error: ${error.message}`, 'error');
+                updateStatus('Frontend is not accessible', false);
+            }
+
+            // Check backend
+            try {
+                const backendResponse = await fetch(`${BACKEND_URL}/health`);
+                if (backendResponse.ok) {
+                    const data = await backendResponse.json();
+                    log('Backend is running', 'success');
+                    updateStatus('Both frontend and backend are running correctly', true);
+                } else {
+                    throw new Error('Backend not responding');
+                }
+            } catch (error) {
+                log(`Backend error: ${error.message}`, 'error');
+                updateStatus('Backend is not accessible', false);
+            }
+
+            // Check CORS
+            try {
+                const corsResponse = await fetch(`${BACKEND_URL}/api/health`, {
+                    method: 'OPTIONS',
+                    headers: {
+                        'Origin': FRONTEND_URL,
+                        'Access-Control-Request-Method': 'GET'
+                    }
+                });
+                log('CORS preflight successful', 'success');
+            } catch (error) {
+                log(`CORS error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProposal() {
+            log('Testing proposal generation...');
+            await testGeneration('proposal');
+        }
+
+        async function testContract() {
+            log('Testing contract generation...');
+            await testGeneration('contract');
+        }
+
+        async function testGeneration(type) {
+            const button = document.getElementById(type === 'proposal' ? 'proposalBtn' : 'contractBtn');
+            button.disabled = true;
+            button.textContent = 'Testing...';
+
+            const resultsDiv = document.getElementById('results');
+            const resultsContent = document.getElementById('results-content');
+            
+            try {
+                // Collect form data
+                const formData = {
+                    clientName: document.getElementById('clientName').value,
+                    clientCompany: document.getElementById('clientCompany').value,
+                    clientPhone: document.getElementById('clientPhone').value,
+                    clientEmail: document.getElementById('clientEmail').value,
+                    clientIndustry: document.getElementById('clientIndustry').value,
+                    country: document.getElementById('country').value,
+                    budget: document.getElementById('budget').value,
+                    timeline: document.getElementById('timeline').value,
+                    serviceType: document.getElementById('serviceType').value
+                };
+
+                log(`Making ${type} generation request...`);
+                log(`Request data: ${JSON.stringify(formData, null, 2)}`);
+
+                const endpoint = type === 'proposal' 
+                    ? `${BACKEND_URL}/api/demo/proposals/generate`
+                    : `${BACKEND_URL}/api/demo/contracts/generate`;
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                log(`${type} generation successful!`, 'success');
+                log(`Response status: ${response.status}`);
+                log(`Response data keys: ${Object.keys(data)}`);
+
+                // Show results
+                resultsDiv.style.display = 'block';
+                if (type === 'proposal' && data.proposal) {
+                    resultsContent.innerHTML = `
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <h3 class="text-lg font-semibold text-green-800">✅ Proposal Generated Successfully!</h3>
+                            <p class="text-green-700">ID: ${data.proposal._id}</p>
+                            <p class="text-green-700">Demo: ${data.demo}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">Preview (first 500 characters):</h4>
+                            <p class="text-sm text-gray-700">${data.proposal.content.substring(0, 500)}...</p>
+                        </div>
+                    `;
+                } else if (type === 'contract' && data.contract) {
+                    resultsContent.innerHTML = `
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <h3 class="text-lg font-semibold text-green-800">✅ Contract Generated Successfully!</h3>
+                            <p class="text-green-700">ID: ${data.contract._id}</p>
+                            <p class="text-green-700">Demo: ${data.demo}</p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold mb-2">Preview (first 500 characters):</h4>
+                            <p class="text-sm text-gray-700">${data.contract.content.substring(0, 500)}...</p>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Invalid response format');
+                }
+
+            } catch (error) {
+                log(`${type} generation failed: ${error.message}`, 'error');
+                resultsDiv.style.display = 'block';
+                resultsContent.innerHTML = `
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h3 class="text-lg font-semibold text-red-800">❌ Generation Failed</h3>
+                        <p class="text-red-700">Error: ${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                button.disabled = false;
+                button.textContent = type === 'proposal' ? '📄 Test Proposal Generation' : '📋 Test Contract Generation';
+            }
+        }
+
+        // Initialize
+        window.onload = function() {
+            log('Test page loaded');
+            checkSystemStatus();
+        };
+    </script>
+</body>
+</html>

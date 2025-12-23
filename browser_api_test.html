@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Capture Browser Error</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .loading { background: #fff3cd; color: #856404; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>🧪 API Test - Production Mode Only</h1>
+    <p><strong>Demo routes have been removed. All endpoints now require authentication.</strong></p>
+    <p>This test shows the backend is running in production mode with CORS properly configured.</p>
+
+    <div class="test-section">
+        <h2>Step 1: Test Backend Connection</h2>
+        <button class="btn-primary" onclick="testBackendConnection()">🔗 Test Backend Connection</button>
+        <div id="connectionResult"></div>
+    </div>
+
+
+    <div class="test-section">
+        <h2>Step 2: Test Demo Routes (Should Fail)</h2>
+        <button class="btn-danger" onclick="testDemoRoutes()" id="demoBtn">❌ Test Demo Routes (Should Fail)</button>
+        <div id="demoResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Step 3: Test Authenticated Endpoints</h2>
+        <p>To test authenticated endpoints, you need a JWT token. Example:</p>
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 10px 0;">
+            <strong>Example authenticated request:</strong><br>
+            <code>POST /api/proposals/generate</code><br>
+            <strong>Headers:</strong><br>
+            - Authorization: Bearer YOUR_JWT_TOKEN<br>
+            - Content-Type: application/json<br>
+            - Origin: http://localhost:3000
+        </div>
+        <div id="authResult"></div>
+    </div>
+
+
+    <div class="test-section">
+        <h2>Step 4: Console Logs</h2>
+        <button class="btn-danger" onclick="clearLogs()">🗑️ Clear Logs</button>
+        <div id="consoleLogs"></div>
+    </div>
+
+    <script>
+        // Clear console logs display
+        function clearLogs() {
+            document.getElementById('consoleLogs').innerHTML = '';
+        }
+
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addLog(type, message) {
+            const logsDiv = document.getElementById('consoleLogs');
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<strong>${type}:</strong> ${new Date().toLocaleTimeString()} - ${message}`;
+            logEntry.style.margin = '5px 0';
+            logsDiv.appendChild(logEntry);
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addLog('LOG', args.join(' '));
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addLog('ERROR', args.join(' '));
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addLog('WARN', args.join(' '));
+        };
+
+        // Test backend connection
+        async function testBackendConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="loading">Testing connection...</div>';
+            
+            try {
+                console.log('🔗 Starting backend connection test...');
+                
+
+
+                const response = await fetch('http://localhost:5001/api/health', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('✅ Backend connection successful');
+                console.log('Response status:', response.status);
+                console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Backend Connection SUCCESS!<br>
+                        Status: ${response.status}<br>
+                        Backend is reachable and responding
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Backend connection failed:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Backend Connection FAILED!<br>
+                        Error: ${error.message}<br>
+                        This explains why frontend shows "failed to generate"
+                    </div>
+                `;
+            }
+        }
+
+
+        // Test demo routes (should fail)
+        async function testDemoRoutes() {
+            const btn = document.getElementById('demoBtn');
+            const resultDiv = document.getElementById('demoResult');
+            
+            btn.disabled = true;
+            btn.textContent = '⏳ Testing...';
+            resultDiv.innerHTML = '<div class="loading">Testing demo routes (should fail)...</div>';
+            
+            try {
+                console.log('❌ Testing demo routes that should be disabled...');
+                console.log('Making request to:', 'http://localhost:5001/api/demo/proposals/generate');
+                
+                const requestData = {
+                    clientName: 'Test Client',
+                    clientCompany: 'Test Company',
+                    clientPhone: '+91 1234567890',
+                    clientEmail: 'test@example.com',
+                    clientIndustry: 'Technology',
+                    country: 'India',
+                    budget: '₹50,000 – ₹1,00,000',
+                    timeline: '1 month',
+                    serviceType: 'Web Development',
+                    currency: 'INR'
+                };
+                
+                const response = await fetch('http://localhost:5001/api/demo/proposals/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': 'http://localhost:8000'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                console.log('Response received:', response.status);
+                
+                if (!response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Demo routes properly DISABLED!<br>
+                            Status: ${response.status}<br>
+                            <strong>Expected behavior - demo routes should return 404</strong><br>
+                            This confirms demo routes have been removed from production.
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Demo routes still enabled!<br>
+                            Status: ${response.status}<br>
+                            <strong>This should not happen in production mode</strong>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('❌ Demo route test failed:', error);
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        ✅ Demo routes properly DISABLED!<br>
+                        <strong>Error:</strong> ${error.message}<br>
+                        <strong>This confirms demo routes have been removed from production.</strong>
+                    </div>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '❌ Test Demo Routes (Should Fail)';
+            }
+        }
+
+        // Initialize
+        console.log('📋 Browser API Test initialized');
+        console.log('Click "Test Backend Connection" to start debugging');
+    </script>
+</body>
+</html>

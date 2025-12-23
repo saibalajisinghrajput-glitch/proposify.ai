@@ -1,0 +1,10 @@
+[dotenv@17.2.3] injecting env (6) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+🔧 Configuration:
+   Environment: development
+   Demo Mode: DISABLED
+---
+⚠️  OpenAI API key not found in environment variables
+🚫 Demo routes disabled
+🚀 ProposifyAI Backend running on port 5001
+🌍 Environment: development
+MongoDB connected

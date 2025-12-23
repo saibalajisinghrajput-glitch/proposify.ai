@@ -1,0 +1,16 @@
+[dotenv@17.2.3] injecting env (6) from .env -- tip: ✅ audit secrets and track compliance: https://dotenvx.com/ops
+🔧 Configuration:
+   Environment: development
+   Demo Mode: DISABLED
+---
+⚠️  OpenAI API key not found in environment variables
+🚫 Demo routes disabled
+🚀 ProposifyAI Backend running on port 5001
+🌍 Environment: development
+MongoDB connected
+[2025-12-22T06:45:40.926Z] POST /api/auth/signup
+Signup request received
+Creating new user instance...
+Signup Error: TypeError: Class constructor ObjectId cannot be invoked without 'new'
+    at signup (/Users/saibalajisinghrajput/Desktop/proposifyai/backend/controllers/auth.js:19:46)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

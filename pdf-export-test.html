@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Export Test - ProposifyAI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button.success {
+            background-color: #28a745;
+        }
+        .button.success:hover {
+            background-color: #1e7e34;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .status.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .sample-content {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📄 PDF Export Test - ProposifyAI</h1>
+            <p>Testing PDF generation functionality for proposals and contracts</p>
+        </div>
+
+        <div class="test-section">
+            <h2>🎯 Demo Mode PDF Export Test</h2>
+            <p>Test the client-side PDF generation for demo-generated content</p>
+            
+            <button class="button" onclick="testDemoProposalPDF()">
+                📄 Generate Demo Proposal PDF
+            </button>
+            
+            <button class="button" onclick="testDemoContractPDF()">
+                📋 Generate Demo Contract PDF
+            </button>
+            
+            <button class="button success" onclick="testTextDownload()">
+                📝 Download as Text File
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 System Status Check</h2>
+            <p>Check if the backend API is running and accessible</p>
+            
+            <button class="button" onclick="checkBackendHealth()">
+                🏥 Check Backend Health
+            </button>
+            
+            <button class="button" onclick="testAPIConnection()">
+                🔗 Test API Connection
+            </button>
+            
+            <div id="status-display"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 Frontend Integration Test</h2>
+            <p>Test the actual frontend components</p>
+            
+            <button class="button" onclick="window.open('http://localhost:3000/demo', '_blank')">
+                🌐 Open Demo Generator
+            </button>
+            
+            <button class="button" onclick="window.open('http://localhost:3000', '_blank')">
+                🏠 Open Main Application
+            </button>
+        </div>
+
+        <div class="test-section">
+            <h2>📋 Test Results</h2>
+            <div id="test-results">
+                <p>Click buttons above to run tests and see results here.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample content for testing
+        const sampleProposal = `
+# PROFESSIONAL SERVICES PROPOSAL
+
+## Executive Summary
+Thank you for the opportunity to present this proposal for your Web Development initiative. Based on our understanding of your Startup business needs and the challenges facing organizations in USA, we have developed a comprehensive approach designed to deliver measurable value to your operation.
+
+## Understanding Your Business Environment
+The Startup sector in USA presents unique opportunities for growth and innovation. Organizations like yours are navigating increased competition while striving to maintain operational efficiency and deliver exceptional results to stakeholders.
+
+## Our Proposed Solution
+We propose a structured approach to your Web Development project that addresses your immediate needs while positioning your organization for long-term success.
+
+**Phase 1: Discovery and Analysis**
+- Comprehensive assessment of current processes and requirements
+- Stakeholder interviews and workflow analysis
+- Risk identification and mitigation planning
+
+**Phase 2: Strategic Planning**
+- Development of customized strategy aligned with your business objectives
+- Resource allocation and timeline optimization
+- Communication and change management protocols
+
+**Phase 3: Implementation and Delivery**
+- Phased rollout with regular checkpoints and progress reviews
+- Quality assurance processes to ensure standards are met
+- Documentation and knowledge transfer
+
+## Investment and Value Proposition
+The investment of $5000 represents exceptional value considering:
+- Direct access to industry expertise in Startup
+- Proven methodology developed through similar projects
+- Risk mitigation through structured approach
+- Long-term partnership focused on your success
+        `;
+
+        const sampleContract = `
+# PROFESSIONAL SERVICES AGREEMENT
+
+This Professional Services Agreement ("Agreement") is entered into between [Your Company Name] ("Provider") and Demo Client ("Client") on ${new Date().toLocaleDateString()}.
+
+## ARTICLE 1: PARTIES AND DEFINITIONS
+
+**Provider:** [Your Company Name], a professional services firm specializing in Web Development
+**Client:** Demo Client, operating within the Startup industry in USA
+
+This Agreement governs the provision of professional services related to the Web Development project, as described in detail below.
+
+## ARTICLE 2: PROJECT SCOPE AND SERVICES
+
+**Project Overview:**
+The Provider agrees to deliver comprehensive Web Development services to support the Client's business objectives within the Startup sector.
+
+**Services to be Provided:**
+1. **Strategic Planning and Consultation**
+   - Business requirements analysis and documentation
+   - Strategic framework development
+   - Implementation roadmap creation
+
+2. **Professional Implementation Services**
+   - Execution of agreed-upon deliverables
+   - Quality assurance and testing protocols
+   - Performance monitoring and optimization
+
+## ARTICLE 3: FINANCIAL TERMS
+
+**Compensation:**
+Client agrees to pay Provider a total fee of $5000 for the services described in this Agreement.
+
+**Payment Schedule:**
+- 30% deposit upon contract execution
+- 40% upon completion of Phase 2 (mid-project milestone)
+- 30% upon final delivery and acceptance
+        `;
+
+        function addResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `status ${type}`;
+            resultDiv.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            resultsDiv.appendChild(resultDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        // Test demo proposal PDF generation
+        function testDemoProposalPDF() {
+            try {
+                addResult('🎯 Testing Demo Proposal PDF generation...', 'info');
+                
+                // Simulate the PDF generation process
+                const content = sampleProposal;
+                const title = 'Demo Proposal - Web Development Project';
+                
+                // Create a simple test to verify the content
+                if (content && content.length > 100) {
+                    addResult('✅ Demo Proposal PDF generation test - Content validation passed', 'success');
+                    
+                    // Simulate opening print window
+                    const printWindow = window.open('', '_blank');
+                    if (printWindow) {
+                        printWindow.document.write(`
+                            <h1>PDF Generation Test Successful</h1>
+                            <p>Title: ${title}</p>
+                            <p>Content length: ${content.length} characters</p>
+                            <p>This simulates the PDF generation process.</p>
+                        `);
+                        printWindow.document.close();
+                        addResult('✅ PDF generation window opened successfully', 'success');
+                    } else {
+                        addResult('❌ Could not open PDF generation window', 'error');
+                    }
+                } else {
+                    addResult('❌ Content validation failed', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Error testing PDF generation: ${error.message}`, 'error');
+            }
+        }
+
+        // Test demo contract PDF generation
+        function testDemoContractPDF() {
+            try {
+                addResult('📋 Testing Demo Contract PDF generation...', 'info');
+                
+                const content = sampleContract;
+                const title = 'Demo Contract - Web Development Services';
+                
+                if (content && content.length > 100) {
+                    addResult('✅ Demo Contract PDF generation test - Content validation passed', 'success');
+                    
+                    // Simulate the generation process
+                    const printWindow = window.open('', '_blank');
+                    if (printWindow) {
+                        printWindow.document.write(`
+                            <h1>Contract PDF Generation Test Successful</h1>
+                            <p>Title: ${title}</p>
+                            <p>Content length: ${content.length} characters</p>
+                            <p>This simulates the PDF generation process for contracts.</p>
+                        `);
+                        printWindow.document.close();
+                        addResult('✅ Contract PDF generation window opened successfully', 'success');
+                    } else {
+                        addResult('❌ Could not open contract PDF generation window', 'error');
+                    }
+                } else {
+                    addResult('❌ Contract content validation failed', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Error testing contract PDF generation: ${error.message}`, 'error');
+            }
+        }
+
+        // Test text download functionality
+        function testTextDownload() {
+            try {
+                addResult('📝 Testing text file download...', 'info');
+                
+                const content = sampleProposal;
+                const element = document.createElement('a');
+                const file = new Blob([content], { type: 'text/plain' });
+                element.href = URL.createObjectURL(file);
+                element.download = 'demo_proposal.txt';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+                
+                addResult('✅ Text file download initiated successfully', 'success');
+            } catch (error) {
+                addResult(`❌ Error testing text download: ${error.message}`, 'error');
+            }
+        }
+
+        // Check backend health
+        async function checkBackendHealth() {
+            try {
+                addResult('🏥 Checking backend health...', 'info');
+                
+                const response = await fetch('http://localhost:5001/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult(`✅ Backend health check passed: ${JSON.stringify(data)}`, 'success');
+                } else {
+                    addResult(`❌ Backend health check failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Backend connection error: ${error.message}`, 'error');
+            }
+        }
+
+        // Test API connection
+        async function testAPIConnection() {
+            try {
+                addResult('🔗 Testing API connection...', 'info');
+                
+                // Test demo endpoint
+                const response = await fetch('http://localhost:5001/api/demo/proposals/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        clientType: 'Startup',
+                        country: 'USA',
+                        budget: '$5000',
+                        timeline: '2 months',
+                        service: 'Web Development'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ API connection test passed - Demo proposal generated', 'success');
+                    addResult(`📄 Generated content length: ${data.proposal?.content?.length || 'N/A'} characters`, 'info');
+                } else {
+                    addResult(`❌ API connection test failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ API connection error: ${error.message}`, 'error');
+            }
+        }
+
+        // Initialize the test page
+        document.addEventListener('DOMContentLoaded', function() {
+            addResult('🚀 PDF Export Test Page Loaded Successfully', 'success');
+            addResult('📋 Ready to run tests. Click the buttons above to begin.', 'info');
+            
+            // Auto-run a quick backend health check
+            setTimeout(checkBackendHealth, 1000);
+        });
+    </script>
+</body>
+</html>

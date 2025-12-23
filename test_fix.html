@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test AI Generation Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        .log {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test AI Generation Fix</h1>
+        
+        <div class="test-section">
+            <h2>Backend Status Check</h2>
+            <p>First, let's verify the backend is running properly:</p>
+            <button onclick="checkBackend()">Check Backend Health</button>
+            <div id="backendStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>API Test</h2>
+            <p>Test the demo proposal generation endpoint directly:</p>
+            <button onclick="testProposalGeneration()">Test Proposal Generation</button>
+            <button onclick="testContractGeneration()">Test Contract Generation</button>
+            <div id="apiStatus"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Frontend Test</h2>
+            <p>Open the actual frontend application to test the fix:</p>
+            <button onclick="openFrontend()">🚀 Open Frontend App</button>
+            <p><strong>Manual Test Steps:</strong></p>
+            <ol>
+                <li>Open the frontend app (button above)</li>
+                <li>Navigate to the Demo Generator page</li>
+                <li>Fill in the form with test data</li>
+                <li>Click "Generate Proposal" or "Generate Contract"</li>
+                <li>Open browser console (F12) to see debug logs</li>
+                <li>Check if generation works without errors</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>Debug Logs</h2>
+            <div class="log" id="debugLog">Debug logs will appear here...</div>
+            <button onclick="clearLogs()">Clear Logs</button>
+        </div>
+
+        <div class="test-section">
+            <h2>Quick Fix Summary</h2>
+            <p>If the issue persists, here are the key fixes implemented:</p>
+            <ul>
+                <li>✅ Enhanced error handling with detailed logging</li>
+                <li>✅ Added 60-second timeout configuration</li>
+                <li>✅ Better validation of API response data</li>
+                <li>✅ Network error detection and reporting</li>
+                <li>✅ Console debugging for troubleshooting</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('debugLog');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}\n`;
+            logDiv.textContent += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('debugLog').textContent = 'Debug logs cleared...\n';
+        }
+
+        async function checkBackend() {
+            log('Checking backend health...');
+            const statusDiv = document.getElementById('backendStatus');
+            
+            try {
+                const response = await fetch('http://localhost:5001/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = `<div class="success">✅ Backend is healthy: ${data.message}</div>`;
+                    log('Backend health check: SUCCESS');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Backend not responding: ${error.message}</div>`;
+                log(`Backend health check: FAILED - ${error.message}`, 'error');
+            }
+        }
+
+        async function testProposalGeneration() {
+            log('Testing proposal generation...');
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.innerHTML = '<div class="loading">⏳ Testing proposal generation...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/demo/proposals/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        clientName: 'Test Client',
+                        clientCompany: 'Test Company',
+                        clientPhone: '+91 9876543210',
+                        clientEmail: 'test@example.com',
+                        clientIndustry: 'Technology',
+                        country: 'India',
+                        budget: '₹50,000 – ₹1,00,000',
+                        timeline: '1 month',
+                        serviceType: 'Web Development',
+                        currency: 'INR'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Proposal generation successful!<br>
+                            Content length: ${data.proposal.content.length} characters<br>
+                            Content preview: ${data.proposal.content.substring(0, 200)}...
+                        </div>
+                    `;
+                    log('Proposal generation test: SUCCESS');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Proposal generation failed: ${error.message}</div>`;
+                log(`Proposal generation test: FAILED - ${error.message}`, 'error');
+            }
+        }
+
+        async function testContractGeneration() {
+            log('Testing contract generation...');
+            const statusDiv = document.getElementById('apiStatus');
+            statusDiv.innerHTML = '<div class="loading">⏳ Testing contract generation...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:5001/api/demo/contracts/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        clientName: 'Test Client',
+                        clientCompany: 'Test Company',
+                        clientPhone: '+91 9876543210',
+                        clientEmail: 'test@example.com',
+                        clientIndustry: 'Technology',
+                        country: 'India',
+                        budget: '₹50,000 – ₹1,00,000',
+                        timeline: '1 month',
+                        serviceType: 'Web Development',
+                        currency: 'INR'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = `
+                        <div class="success">
+                            ✅ Contract generation successful!<br>
+                            Content length: ${data.contract.content.length} characters<br>
+                            Content preview: ${data.contract.content.substring(0, 200)}...
+                        </div>
+                    `;
+                    log('Contract generation test: SUCCESS');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="error">❌ Contract generation failed: ${error.message}</div>`;
+                log(`Contract generation test: FAILED - ${error.message}`, 'error');
+            }
+        }
+
+        function openFrontend() {
+            log('Opening frontend application...');
+            window.open('http://localhost:3000', '_blank');
+        }
+
+        // Auto-check backend on page load
+        window.addEventListener('load', () => {
+            log('Page loaded, checking backend...');
+            checkBackend();
+        });
+    </script>
+</body>
+</html>

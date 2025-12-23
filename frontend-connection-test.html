@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Generation Test - ProposifyAI</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .button:hover { background: #2563eb; }
+        .button:disabled { background: #9ca3af; cursor: not-allowed; }
+        .result {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        .loading {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        h1 { color: #1f2937; }
+        h2 { color: #374151; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 ProposifyAI - Frontend-Backend Connection Test</h1>
+        
+        <div class="success">
+            <strong>✅ System Status:</strong><br>
+            • Backend: Running on http://localhost:5001<br>
+            • Frontend: Ready for testing<br>
+            • AI Generation: Using fallback templates (OpenAI not configured)
+        </div>
+
+        <h2>Test AI Proposal Generation</h2>
+        <p>Click the button below to test the AI proposal generation API directly from the browser:</p>
+        
+        <button class="button" onclick="testProposalGeneration()" id="proposalBtn">
+            🚀 Generate AI Proposal
+        </button>
+        <div id="proposalResult"></div>
+
+        <h2>Test AI Contract Generation</h2>
+        <p>Click the button below to test the AI contract generation API directly from the browser:</p>
+        
+        <button class="button" onclick="testContractGeneration()" id="contractBtn">
+            📋 Generate AI Contract
+        </button>
+        <div id="contractResult"></div>
+
+        <h2>Backend Health Check</h2>
+        <button class="button" onclick="testBackendHealth()" id="healthBtn">
+            🔍 Check Backend Status
+        </button>
+        <div id="healthResult"></div>
+
+        <div id="console" style="margin-top: 30px;">
+            <h2>Console Output</h2>
+            <div id="consoleOutput" style="background: #1f2937; color: #f9fafb; padding: 15px; border-radius: 6px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto;">
+                Ready for testing...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001';
+        
+        function log(message, type = 'info') {
+            const consoleOutput = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            
+            if (type === 'error') {
+                logEntry.style.color = '#f87171';
+                logEntry.textContent = `[${timestamp}] ERROR: ${message}`;
+            } else if (type === 'success') {
+                logEntry.style.color = '#34d399';
+                logEntry.textContent = `[${timestamp}] SUCCESS: ${message}`;
+            } else {
+                logEntry.style.color = '#60a5fa';
+                logEntry.textContent = `[${timestamp}] INFO: ${message}`;
+            }
+            
+            consoleOutput.appendChild(logEntry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        async function testBackendHealth() {
+            const resultDiv = document.getElementById('healthResult');
+            const btn = document.getElementById('healthBtn');
+            
+            btn.disabled = true;
+            resultDiv.innerHTML = '<div class="loading">🔍 Checking backend health...</div>';
+            
+            try {
+                log('Testing backend health endpoint...');
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Backend Health Check Passed!</strong><br>
+                        Status: ${data.status}<br>
+                        Message: ${data.message}<br>
+                        Timestamp: ${data.timestamp}
+                    </div>
+                `;
+                log('Backend health check successful', 'success');
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Backend Health Check Failed!</strong><br>
+                        Error: ${error.message}<br>
+                        <br>
+                        <strong>Possible Issues:</strong><br>
+                        • Backend server not running on port 5001<br>
+                        • CORS policy blocking the request<br>
+                        • Network connectivity issues
+                    </div>
+                `;
+                log(`Backend health check failed: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function testProposalGeneration() {
+            const resultDiv = document.getElementById('proposalResult');
+            const btn = document.getElementById('proposalBtn');
+            
+            btn.disabled = true;
+            resultDiv.innerHTML = '<div class="loading">🚀 Generating AI proposal...</div>';
+            
+            try {
+                log('Testing AI proposal generation...');
+                const response = await fetch(`${API_BASE}/api/demo/proposals/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({
+                        clientType: 'Startup',
+                        country: 'USA',
+                        budget: '$5000',
+                        timeline: '2 months',
+                        service: 'Web Development'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ AI Proposal Generated Successfully!</strong><br>
+                        Message: ${data.message}<br>
+                        Proposal ID: ${data.proposal._id}<br>
+                        Content Length: ${data.proposal.content.length} characters<br>
+                        Generated At: ${new Date(data.proposal.createdAt).toLocaleString()}
+                    </div>
+                    <div class="result">${data.proposal.content}</div>
+                `;
+                log('AI proposal generation successful', 'success');
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ AI Proposal Generation Failed!</strong><br>
+                        Error: ${error.message}<br>
+                        <br>
+                        <strong>Debug Information:</strong><br>
+                        • Check if backend is running on port 5001<br>
+                        • Verify CORS configuration in backend<br>
+                        • Check browser console for detailed errors
+                    </div>
+                `;
+                log(`AI proposal generation failed: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function testContractGeneration() {
+            const resultDiv = document.getElementById('contractResult');
+            const btn = document.getElementById('contractBtn');
+            
+            btn.disabled = true;
+            resultDiv.innerHTML = '<div class="loading">📋 Generating AI contract...</div>';
+            
+            try {
+                log('Testing AI contract generation...');
+                const response = await fetch(`${API_BASE}/api/demo/contracts/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({
+                        clientType: 'Startup',
+                        country: 'USA',
+                        budget: '$5000',
+                        timeline: '2 months',
+                        service: 'Web Development'
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <strong>✅ AI Contract Generated Successfully!</strong><br>
+                        Message: ${data.message}<br>
+                        Contract ID: ${data.contract._id}<br>
+                        Content Length: ${data.contract.content.length} characters<br>
+                        Generated At: ${new Date(data.contract.createdAt).toLocaleString()}
+                    </div>
+                    <div class="result">${data.contract.content}</div>
+                `;
+                log('AI contract generation successful', 'success');
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ AI Contract Generation Failed!</strong><br>
+                        Error: ${error.message}<br>
+                        <br>
+                        <strong>Debug Information:</strong><br>
+                        • Check if backend is running on port 5001<br>
+                        • Verify CORS configuration in backend<br>
+                        • Check browser console for detailed errors
+                    </div>
+                `;
+                log(`AI contract generation failed: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        // Auto-test backend health on page load
+        window.addEventListener('load', () => {
+            log('Page loaded, ready for testing');
+            testBackendHealth();
+        });
+    </script>
+</body>
+</html>
