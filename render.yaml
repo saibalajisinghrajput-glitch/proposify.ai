@@ -1,3 +1,4 @@
+
 services:
   - type: web
     name: proposifyai-backend
@@ -10,9 +11,7 @@ services:
       - key: PORT
         value: 10000
       - key: MONGODB_URI
-        fromDatabase:
-          name: proposifyai-db
-          property: connectionString
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: OPENAI_API_KEY
@@ -21,10 +20,7 @@ services:
         sync: false
       - key: STRIPE_WEBHOOK_SECRET
         sync: false
+      - key: ENABLE_DEMO_MODE
+        value: false
       - key: CLIENT_URL
-        value: https://proposifyai-frontend.vercel.app
-
-databases:
-  - name: proposifyai-db
-    databaseName: proposifyai
-    user: proposifyai
+        sync: false
