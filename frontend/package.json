@@ -2,6 +2,8 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+
+
   "homepage": "https://saibalajisinghrajput-glitch.github.io/proposify.ai",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
