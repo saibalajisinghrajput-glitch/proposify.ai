@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/proposify.ai/static/css/main.652aa06b.css",
-    "main.js": "/proposify.ai/static/js/main.c2dc6def.js",
+    "main.js": "/proposify.ai/static/js/main.f86ad8d9.js",
     "static/js/453.20359781.chunk.js": "/proposify.ai/static/js/453.20359781.chunk.js",
     "index.html": "/proposify.ai/index.html",
     "main.652aa06b.css.map": "/proposify.ai/static/css/main.652aa06b.css.map",
-    "main.c2dc6def.js.map": "/proposify.ai/static/js/main.c2dc6def.js.map",
+    "main.f86ad8d9.js.map": "/proposify.ai/static/js/main.f86ad8d9.js.map",
     "453.20359781.chunk.js.map": "/proposify.ai/static/js/453.20359781.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.652aa06b.css",
-    "static/js/main.c2dc6def.js"
+    "static/js/main.f86ad8d9.js"
   ]
 }
