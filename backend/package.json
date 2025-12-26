@@ -1,27 +1,17 @@
-
 {
   "name": "proposify-backend",
   "version": "1.0.0",
-  "description": "Backend API for Proposify.ai",
-  "main": "server.js",
+  "description": "ProposifyAI Backend - Emergency Server",
+  "main": "simple-emergency-server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "deploy": "echo \"Deploy to Railway: https://railway.app\"",
-    "deploy:railway": "echo \"Upload backend folder to Railway\""
+    "start": "node simple-emergency-server.js",
+    "dev": "node simple-emergency-server.js"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^4.22.1",
-    "express-rate-limit": "^8.2.1",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.0.2",
-    "nodemon": "^3.1.11",
-    "openai": "^6.15.0",
-    "pdfkit": "^0.17.2",
-    "stripe": "^20.1.0"
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

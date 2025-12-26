@@ -1,12 +1,13 @@
 services:
   - type: web
-    name: proposifyai-backend
+    name: proposify-backend
     env: node
-    plan: free
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+      - key: CLIENT_URL
+        value: https://saibalajisinghrajput-glitch.github.io

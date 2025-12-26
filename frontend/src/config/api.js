@@ -9,12 +9,12 @@ import axios from 'axios';
 const API_CONFIG = {
   // Development - Local backend
   development: {
-    BASE_URL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
+    BASE_URL: process.env.REACT_APP_API_URL || 'https://proposify-ai-6.onrender.com/api',
     TIMEOUT: 60000, // Increased timeout to 60 seconds
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 1000
   },
-  
+
   // Production - Backend API URL
   production: {
     BASE_URL: process.env.REACT_APP_API_URL || 'https://proposifyai-backend.onrender.com/api',
@@ -22,22 +22,22 @@ const API_CONFIG = {
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 2000
   },
-  
+
   // Get current environment
   getCurrentConfig() {
     const env = process.env.NODE_ENV || process.env.REACT_APP_ENVIRONMENT || 'development';
     return this[env] || this.development;
   },
-  
+
   // Get base URL for API calls
   getBaseURL() {
     return this.getCurrentConfig().BASE_URL;
   },
-  
+
   // Enhanced axios instance with comprehensive error handling
   createAxiosInstance() {
     const config = this.getCurrentConfig();
-    
+
     const instance = axios.create({
       baseURL: config.BASE_URL,
       timeout: config.TIMEOUT,
@@ -48,51 +48,51 @@ const API_CONFIG = {
       }
     });
 
-// Mock Data for Client-Side Simulation
-const processMockRequest = async (config) => {
-  console.log('🎭 Processing Mock Request for:', config.url);
-  
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
+    // Mock Data for Client-Side Simulation
+    const processMockRequest = async (config) => {
+      console.log('🎭 Processing Mock Request for:', config.url);
 
-  // 1. Auth: Login
-  if (config.url.includes('/auth/login')) {
-    const { email } = JSON.parse(config.data);
-    return {
-      status: 200,
-      data: {
-        token: 'mock-jwt-token-12345',
-        user: { 
-          id: 'mock-user-id',
-          name: 'Demo User',
-          email: email || 'demo@example.com' 
-        }
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 1. Auth: Login
+      if (config.url.includes('/auth/login')) {
+        const { email } = JSON.parse(config.data);
+        return {
+          status: 200,
+          data: {
+            token: 'mock-jwt-token-12345',
+            user: {
+              id: 'mock-user-id',
+              name: 'Demo User',
+              email: email || 'demo@example.com'
+            }
+          }
+        };
       }
-    };
-  }
 
-  // 2. Auth: Signup
-  if (config.url.includes('/auth/signup')) {
-    const { name, email } = JSON.parse(config.data);
-    return {
-      status: 201,
-      data: {
-        token: 'mock-jwt-token-12345',
-        user: { 
-          id: 'mock-user-id', 
-          name: name,
-          email: email 
-        }
+      // 2. Auth: Signup
+      if (config.url.includes('/auth/signup')) {
+        const { name, email } = JSON.parse(config.data);
+        return {
+          status: 201,
+          data: {
+            token: 'mock-jwt-token-12345',
+            user: {
+              id: 'mock-user-id',
+              name: name,
+              email: email
+            }
+          }
+        };
       }
-    };
-  }
 
-  // 3. AI Generation (Resume, Offer Letter, Contract)
-  if (config.url.includes('/resume/generate') || config.url.includes('/offer-letter/generate') || config.url.includes('/contract/generate')) {
-    return {
-      status: 200,
-      data: {
-        content: `
+      // 3. AI Generation (Resume, Offer Letter, Contract)
+      if (config.url.includes('/resume/generate') || config.url.includes('/offer-letter/generate') || config.url.includes('/contract/generate')) {
+        return {
+          status: 200,
+          data: {
+            content: `
 # AI Generated Document
 (Simulated Content for Demo)
 
@@ -113,39 +113,39 @@ Highly motivated professional with a proven track record of success. Dedicated t
 
 *Note: This is a demo response generated client-side because the backend server is not connected.*
         `
+          }
+        };
       }
+
+      // 4. Health Check
+      if (config.url.includes('/health')) {
+        return { status: 200, data: { status: 'ok', mode: 'mock' } };
+      }
+
+      return Promise.reject(new Error('Mock endpoint not found'));
     };
-  }
-  
-  // 4. Health Check
-  if (config.url.includes('/health')) {
-    return { status: 200, data: { status: 'ok', mode: 'mock' } };
-  }
 
-  return Promise.reject(new Error('Mock endpoint not found'));
-};
-
-// Request interceptor for debugging and Mocking
+    // Request interceptor for debugging and Mocking
     instance.interceptors.request.use(
       async (request) => {
         console.log(`🔄 API Request: ${request.method?.toUpperCase()} ${request.url}`);
-        
+
         // ENABLE MOCK MODE IF BACKEND IS UNREACHABLE
         // We act as if the interceptor "handled" the request by throwing a special error 
         // that we catch in the response interceptor, OR we can just return a promise that resolves to the mock response
         // But axios interceptors usually expect a config object returned.
-        
+
         // STRATEGY: We attach a flag to the config to retry with mock if it fails?
         // Simpler: We check if we are on the live GitHub Pages site (which has no backend).
-        const isLiveDemo = window.location.hostname.includes('github.io');
-        
-        if (isLiveDemo) {
-           console.warn('⚠️ Running in Live Demo Mode (Client-Side Mock)');
-           request.adapter = async (config) => {
-             return processMockRequest(config);
-           };
-        }
-        
+        // const isLiveDemo = window.location.hostname.includes('github.io');
+
+        // if (isLiveDemo) {
+        //    console.warn('⚠️ Running in Live Demo Mode (Client-Side Mock)');
+        //    request.adapter = async (config) => {
+        //      return processMockRequest(config);
+        //    };
+        // }
+
         return request;
       },
       (error) => {
@@ -164,13 +164,13 @@ Highly motivated professional with a proven track record of success. Dedicated t
         const config = error.config || {};
         const status = error.response?.status;
         const message = error.response?.data?.message || error.message;
-        
+
         console.error('❌ API Error Details:');
         console.error('  Status:', status);
         console.error('  Message:', message);
         console.error('  URL:', config.url);
         console.error('  Method:', config.method);
-        
+
         // Enhanced error classification
         if (error.code === 'ECONNABORTED') {
           console.error('  Type: TIMEOUT - Request took too long');
@@ -202,17 +202,17 @@ Highly motivated professional with a proven track record of success. Dedicated t
 
     return instance;
   },
-  
+
   // Helper function to get environment
   getEnvironment() {
     return process.env.NODE_ENV || process.env.REACT_APP_ENVIRONMENT || 'development';
   },
-  
+
   // Check if in production
   isProduction() {
     return this.getEnvironment() === 'production';
   },
-  
+
   // Health check function
   async checkBackendHealth() {
     try {
