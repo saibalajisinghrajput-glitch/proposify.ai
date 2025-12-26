@@ -170,13 +170,30 @@ const startServer = () => {
   });
 };
 
+
 const connectDB = async () => {
   try {
     if (!process.env.MONGODB_URI) {
       console.warn('⚠️ MONGODB_URI is not set. Database features will not work.');
       return;
     }
-    await mongoose.connect(process.env.MONGODB_URI);
+    
+    const mongooseOptions = {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      family: 4, // Use IPv4
+      retryWrites: true,
+      w: 'majority'
+    };
+    
+    // Add authSource if not in URI
+    let mongodbUri = process.env.MONGODB_URI;
+    if (!mongodbUri.includes('authSource=')) {
+      mongodbUri += (mongodbUri.includes('?') ? '&' : '?') + 'authSource=admin';
+    }
+    
+    await mongoose.connect(mongodbUri, mongooseOptions);
     console.log('✅ MongoDB connected successfully');
   } catch (err) {
     console.error('❌ MongoDB connection failed:', err.message);
