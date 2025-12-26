@@ -15,9 +15,10 @@ const API_CONFIG = {
     RETRY_DELAY: 1000
   },
 
+
   // Production - Backend API URL
   production: {
-    BASE_URL: process.env.REACT_APP_API_URL || 'https://proposifyai-backend.onrender.com/api',
+    BASE_URL: process.env.REACT_APP_API_URL || 'https://proposify-ai-6.onrender.com/api',
     TIMEOUT: 60000,
     RETRY_ATTEMPTS: 3,
     RETRY_DELAY: 2000
