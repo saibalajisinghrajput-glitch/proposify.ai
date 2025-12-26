@@ -48,11 +48,104 @@ const API_CONFIG = {
       }
     });
 
-    // Request interceptor for debugging
+// Mock Data for Client-Side Simulation
+const processMockRequest = async (config) => {
+  console.log('🎭 Processing Mock Request for:', config.url);
+  
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
+  // 1. Auth: Login
+  if (config.url.includes('/auth/login')) {
+    const { email } = JSON.parse(config.data);
+    return {
+      status: 200,
+      data: {
+        token: 'mock-jwt-token-12345',
+        user: { 
+          id: 'mock-user-id',
+          name: 'Demo User',
+          email: email || 'demo@example.com' 
+        }
+      }
+    };
+  }
+
+  // 2. Auth: Signup
+  if (config.url.includes('/auth/signup')) {
+    const { name, email } = JSON.parse(config.data);
+    return {
+      status: 201,
+      data: {
+        token: 'mock-jwt-token-12345',
+        user: { 
+          id: 'mock-user-id', 
+          name: name,
+          email: email 
+        }
+      }
+    };
+  }
+
+  // 3. AI Generation (Resume, Offer Letter, Contract)
+  if (config.url.includes('/resume/generate') || config.url.includes('/offer-letter/generate') || config.url.includes('/contract/generate')) {
+    return {
+      status: 200,
+      data: {
+        content: `
+# AI Generated Document
+(Simulated Content for Demo)
+
+## Professional Summary
+Highly motivated professional with a proven track record of success. Dedicated to continuous improvement and delivering high-quality results.
+
+## Experience
+- **Senior Developer** | Tech Corp | 2020 - Present
+  - Led a team of 5 developers to build scalable web applications.
+  - Improved system performance by 40%.
+  
+- **Junior Developer** | Startup Inc | 2018 - 2020
+  - Developed frontend features using React.
+  - Collaborated with designers to implement responsive UIs.
+
+## Education
+- **B.S. Computer Science** | University of Technology | 2018
+
+*Note: This is a demo response generated client-side because the backend server is not connected.*
+        `
+      }
+    };
+  }
+  
+  // 4. Health Check
+  if (config.url.includes('/health')) {
+    return { status: 200, data: { status: 'ok', mode: 'mock' } };
+  }
+
+  return Promise.reject(new Error('Mock endpoint not found'));
+};
+
+// Request interceptor for debugging and Mocking
     instance.interceptors.request.use(
-      (request) => {
+      async (request) => {
         console.log(`🔄 API Request: ${request.method?.toUpperCase()} ${request.url}`);
-        console.log('Request data:', request.data);
+        
+        // ENABLE MOCK MODE IF BACKEND IS UNREACHABLE
+        // We act as if the interceptor "handled" the request by throwing a special error 
+        // that we catch in the response interceptor, OR we can just return a promise that resolves to the mock response
+        // But axios interceptors usually expect a config object returned.
+        
+        // STRATEGY: We attach a flag to the config to retry with mock if it fails?
+        // Simpler: We check if we are on the live GitHub Pages site (which has no backend).
+        const isLiveDemo = window.location.hostname.includes('github.io');
+        
+        if (isLiveDemo) {
+           console.warn('⚠️ Running in Live Demo Mode (Client-Side Mock)');
+           request.adapter = async (config) => {
+             return processMockRequest(config);
+           };
+        }
+        
         return request;
       },
       (error) => {
